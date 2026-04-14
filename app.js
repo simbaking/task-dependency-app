@@ -514,16 +514,10 @@
         updateGraph();
     }
 
-    // ──────────── App Class ────────────
-    class TaskFlowApp {
-        start() {
-            load();
-            initGraph();
-            renderAll();
-        }
-    }
-
-    // ──────────── Init ────────────
-    const app = new TaskFlowApp();
-    app.start();
+    // ──────────── Expose Init ────────────
+    window.taskFlowCore = {
+        load,
+        initGraph,
+        renderAll
+    };
 })();
