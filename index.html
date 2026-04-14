@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow — Dependency Manager</title>
+    <meta name="description" content="Visual task dependency manager with interactive network graph and importance ranking.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="app-header">
+        <div class="header-content">
+            <div class="logo">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <circle cx="8" cy="8" r="4" fill="url(#g1)"/>
+                    <circle cx="20" cy="8" r="4" fill="url(#g1)"/>
+                    <circle cx="14" cy="20" r="4" fill="url(#g2)"/>
+                    <line x1="8" y1="12" x2="14" y2="16" stroke="url(#g1)" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="20" y1="12" x2="14" y2="16" stroke="url(#g1)" stroke-width="1.5" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="g1" x1="0" y1="0" x2="28" y2="28">
+                            <stop stop-color="#a78bfa"/><stop offset="1" stop-color="#6366f1"/>
+                        </linearGradient>
+                        <linearGradient id="g2" x1="0" y1="0" x2="28" y2="28">
+                            <stop stop-color="#818cf8"/><stop offset="1" stop-color="#4f46e5"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <h1>TaskFlow</h1>
+            </div>
+            <p class="tagline">Visualize your task dependencies</p>
+        </div>
+    </header>
+
+    <main id="app-main">
+        <!-- Left Sidebar: Task Management -->
+        <aside id="sidebar-left" class="panel">
+            <section id="add-task-section">
+                <h2>Add Task</h2>
+                <form id="add-task-form">
+                    <div class="form-group">
+                        <label for="task-name-input">Task Name</label>
+                        <input type="text" id="task-name-input" placeholder="Enter task name…" autocomplete="off" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prereq-select">Prerequisites <span class="hint">(tasks that must be done first)</span></label>
+                        <div id="prereq-select" class="multi-select">
+                            <p class="empty-state" id="prereq-empty">Add tasks first to set prerequisites</p>
+                        </div>
+                    </div>
+                    <button type="submit" id="add-task-btn">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        Add Task
+                    </button>
+                </form>
+            </section>
+
+            <section id="task-list-section">
+                <h2>All Tasks <span id="task-count" class="badge">0</span></h2>
+                <ul id="task-list">
+                    <li class="empty-state" id="task-list-empty">No tasks yet. Add one above!</li>
+                </ul>
+            </section>
+        </aside>
+
+        <!-- Center: Network Graph -->
+        <section id="graph-panel" class="panel">
+            <div id="graph-header">
+                <h2>Dependency Network</h2>
+                <div id="graph-controls">
+                    <button id="btn-recenter" title="Re-center graph">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>
+                    </button>
+                    <button id="btn-zoom-in" title="Zoom in">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><line x1="8" y1="4" x2="8" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4" y1="8" x2="12" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+                    <button id="btn-zoom-out" title="Zoom out">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><line x1="4" y1="8" x2="12" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="graph-container">
+                <div id="graph-empty" class="empty-state">
+                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" opacity="0.3">
+                        <circle cx="20" cy="20" r="8" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="44" cy="20" r="8" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="32" cy="44" r="8" stroke="currentColor" stroke-width="2"/>
+                        <line x1="20" y1="28" x2="32" y2="36" stroke="currentColor" stroke-width="1.5"/>
+                        <line x1="44" y1="28" x2="32" y2="36" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    <p>Add tasks with dependencies to see the network</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Sidebar: Rankings -->
+        <aside id="sidebar-right" class="panel">
+            <section id="ranking-section">
+                <h2>Task Ranking</h2>
+                <p class="hint">Ordered by total transitive dependencies</p>
+                <ol id="ranking-list">
+                    <li class="empty-state" id="ranking-empty">Add tasks with dependencies to see rankings</li>
+                </ol>
+            </section>
+
+            <section id="legend-section">
+                <h2>Legend</h2>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <span class="legend-node high"></span>
+                        <span>High importance (many dependents)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-node medium"></span>
+                        <span>Medium importance</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-node low"></span>
+                        <span>Low / no dependents</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-arrow">→</span>
+                        <span>"depends on" direction</span>
+                    </div>
+                </div>
+            </section>
+        </aside>
+    </main>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
