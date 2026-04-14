@@ -514,10 +514,8 @@
         updateGraph();
     }
 
-    // ──────────── Expose Init ────────────
-    window.taskFlowCore = {
-        load,
-        initGraph,
-        renderAll
-    };
+    // ──────────── Init ────────────
+    load();
+    initGraph();
+    renderAll();
 })();
