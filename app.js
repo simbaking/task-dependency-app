@@ -514,8 +514,16 @@
         updateGraph();
     }
 
+    // ──────────── App Class ────────────
+    class TaskFlowApp {
+        start() {
+            load();
+            initGraph();
+            renderAll();
+        }
+    }
+
     // ──────────── Init ────────────
-    load();
-    initGraph();
-    renderAll();
+    const app = new TaskFlowApp();
+    app.start();
 })();
